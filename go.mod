@@ -8,9 +8,3 @@ require (
 	github.com/rosetta-api/services v0.0.0
 	github.com/rosetta-api/types v0.0.0
 )
-
-replace (
-	github.com/rosetta-api/icx v0.0.0 => ./icx
-	github.com/rosetta-api/services v0.0.0 => ./services
-	github.com/rosetta-api/types v0.0.0 => ./types
-)
