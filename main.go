@@ -7,28 +7,27 @@ import (
 	"github.com/coinbase/rosetta-sdk-go/asserter"
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
-	"github.com/rosetta-api/icx"
-	"github.com/rosetta-api/services"
+	"github.com/leeheonseung/icon-rosetta-api/icx"
+	"github.com/leeheonseung/icon-rosetta-api/services"
 )
 
 func NewRosettaRouter(
-		network *types.NetworkIdentifier,
-		asserter *asserter.Asserter,
-	) http.Handler {
-		client := icx.NewRpcClient()
-		blockAPIService := services.NewBlockAPIService(client, network)
-		blockAPIController := server.NewBlockAPIController(
-			blockAPIService,
-			asserter,
-		)
-		return server.NewRouter(blockAPIController)
+	network *types.NetworkIdentifier,
+	asserter *asserter.Asserter,
+) http.Handler {
+	client := icx.NewRpcClient()
+	blockAPIService := services.NewBlockAPIService(client, network)
+	blockAPIController := server.NewBlockAPIController(
+		blockAPIService,
+		asserter,
+	)
+	return server.NewRouter(blockAPIController)
 }
-
 
 func main() {
 	networkConfig := &types.NetworkIdentifier{
 		Blockchain: "ICON",
-		Network: "testnet",
+		Network:    "testnet",
 	}
 
 	asserter, err := asserter.NewServer(

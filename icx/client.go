@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/rosetta-api/types"
+	"github.com/leeheonseung/icon-rosetta-api/types"
 )
 
 const (
@@ -14,35 +14,35 @@ const (
 )
 
 type RPCRequest struct {
-	Method 	string			`json:"method"`
-	ID 		int				`json:"id"`
-	JSONRPC string			`json:"jsonrpc"`
-	Params 	json.RawMessage `json:"params,omitempty"`
+	Method  string          `json:"method"`
+	ID      int             `json:"id"`
+	JSONRPC string          `json:"jsonrpc"`
+	Params  json.RawMessage `json:"params,omitempty"`
 }
 
 type RPCResponse struct {
-	JSONRPC string			`json:"jsonrpc"`
-	Result 	json.RawMessage	`json:"result"`
-	Error	int				`json:"error,omitempty"`
-	ID		int				`json:"id"`
+	JSONRPC string          `json:"jsonrpc"`
+	Result  json.RawMessage `json:"result"`
+	Error   int             `json:"error,omitempty"`
+	ID      int             `json:"id"`
 }
 
 type RPCClient struct {
 	endpoint string
-	hc *http.Client
+	hc       *http.Client
 }
 
 func NewRpcClient() *RPCClient {
 	return &RPCClient{
 		endpoint: icxEndpointURL,
-		hc: &http.Client{},
+		hc:       &http.Client{},
 	}
 }
 
 func (r *RPCClient) DoCall(method string, params interface{}, result interface{}) (response *RPCResponse, err error) {
 	request := &RPCRequest{
-		Method: method,
-		ID: 1234,
+		Method:  method,
+		ID:      1234,
 		JSONRPC: "2.0",
 	}
 
@@ -99,4 +99,3 @@ func decodeBody(resp *http.Response) (rpcResponse *RPCResponse, err error) {
 	err = json.NewDecoder(resp.Body).Decode(&rpcResponse)
 	return
 }
-

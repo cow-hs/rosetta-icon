@@ -5,7 +5,7 @@ import (
 
 	"github.com/coinbase/rosetta-sdk-go/server"
 	"github.com/coinbase/rosetta-sdk-go/types"
-	"github.com/rosetta-api/icx"
+	"github.com/leeheonseung/icon-rosetta-api/icx"
 )
 
 type BlockAPIService struct {
@@ -37,4 +37,3 @@ func (s *BlockAPIService) BlockTransaction(
 ) (*types.BlockTransactionResponse, *types.Error) {
 	return nil, nil
 }
-
