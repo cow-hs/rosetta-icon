@@ -12,20 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package services
 
 import (
-	"os"
-
-	"github.com/leeheonseung/rosetta-icon/cmd"
-
-	"github.com/fatih/color"
+	"context"
+	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
-func main() {
-	err := cmd.Execute()
-	if err != nil {
-		color.Red(err.Error())
-		os.Exit(1)
-	}
+// Client is used by the servicers to get block
+// data and to submit transactions.
+type Client interface {
+	GetBlock(
+		context.Context,
+		*types.PartialBlockIdentifier,
+	) (*types.Block, error)
+
+	GetBlockTransaction(
+		context.Context,
+		*types.BlockIdentifier,
+		*types.TransactionIdentifier,
+	) (*types.Transaction, error)
 }
