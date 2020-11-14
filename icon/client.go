@@ -15,15 +15,9 @@
 package icon
 
 import (
-	"bytes"
-	"context"
-	"encoding/json"
 	"fmt"
-	"github.com/coinbase/rosetta-sdk-go/types"
-	"io/ioutil"
-	"net"
-	"net/http"
-	"time"
+	RosettaTypes "github.com/coinbase/rosetta-sdk-go/types"
+	icon_v1 "github.com/leeheonseung/rosetta-icon/icon/v1_client"
 )
 
 // Client is used to fetch blocks from ICON Node and
@@ -34,105 +28,51 @@ import (
 // in each request.
 
 type Client struct {
-	baseURL    string
-	debugURL   string
-	currency   *types.Currency
-	httpClient *http.Client
+	currency *RosettaTypes.Currency
+	iconV1   *icon_v1.ClientV3
 }
 
 func NewClient(
-	baseURL string,
-	debugURL string,
-	currency *types.Currency,
+	endpoint string,
+	currency *RosettaTypes.Currency,
 ) *Client {
 	return &Client{
-		baseURL:    baseURL,
-		debugURL:   debugURL,
-		currency:   currency,
-		httpClient: newHTTPClient(defaultTimeout),
+		currency,
+		icon_v1.NewClientV3(endpoint),
 	}
 }
 
-// newHTTPClient returns a new HTTP client
-func newHTTPClient(
-	timeout time.Duration,
-) *http.Client {
-	var netTransport = &http.Transport{
-		Dial: (&net.Dialer{
-			Timeout: dialTimeout,
-		}).Dial,
-	}
-	httpClient := &http.Client{
-		Timeout:   timeout,
-		Transport: netTransport,
-	}
-	return httpClient
-}
+func (ic *Client) GetLastBlock() (*RosettaTypes.Block, error) {
 
-func (ic *Client) GetBlock(
-	ctx context.Context,
-	blockIdentifier *types.PartialBlockIdentifier,
-) (*Block, error) {
-	response := &blockResponse{}
-	err := ic.post(ctx, requestMethodGetBlock, blockIdentifier, response)
+	block, err := ic.iconV1.GetLastBlock()
 	if err != nil {
-		return nil, fmt.Errorf("%w: could not get block", err)
-	}
-	return response.Result, nil
-}
-
-// post makes a HTTP request to a Bitcoin node
-func (ic *Client) post(
-	ctx context.Context,
-	method requestMethod,
-	params interface{},
-	response jSONRPCResponse,
-) error {
-	rpcRequest := &RPCRequest{
-		JSONRPC: jSONRPCVersion,
-		ID:      requestID,
-		Method:  string(method),
+		return nil, fmt.Errorf("%w: could not get last block", err)
 	}
 
-	if params != nil {
-		rawParams, onError := json.Marshal(params)
-		if onError != nil {
-			return fmt.Errorf("%w: error marshalling RPC params", onError)
+	blockIdentifier := &RosettaTypes.BlockIdentifier{
+		Hash:  string(block.BlockHash),
+		Index: block.Height,
+	}
+
+	parentBlockIdentifier := blockIdentifier
+
+	if blockIdentifier.Index != genesisBlockIndex {
+		parentBlockIdentifier = &RosettaTypes.BlockIdentifier{
+			Hash:  string(block.PrevID),
+			Index: blockIdentifier.Index - 1,
 		}
-		rpcRequest.Params = rawParams
 	}
 
-	requestBody, err := json.Marshal(rpcRequest)
+	metadata, err := block.Metadata()
 	if err != nil {
-		return fmt.Errorf("%w: error marshalling RPC request", err)
+		return nil, fmt.Errorf("%w: could not get block metadata", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, ic.baseURL, bytes.NewReader(requestBody))
-	if err != nil {
-		return fmt.Errorf("%w: error constructing request", err)
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
-
-	// Perform the post request
-	res, err := ic.httpClient.Do(req.WithContext(ctx))
-	if err != nil {
-		return fmt.Errorf("%w: error posting to rpc-api", err)
-	}
-	defer res.Body.Close()
-
-	// We expect JSON-RPC responses to return `200 OK` statuses
-	if res.StatusCode != http.StatusOK {
-		val, _ := ioutil.ReadAll(res.Body)
-		return fmt.Errorf("invalid response: %s %s", res.Status, string(val))
-	}
-
-	rpcResponse := &RPCResponse{}
-	if err = json.NewDecoder(res.Body).Decode(rpcResponse); err != nil {
-		return fmt.Errorf("%w: error decoding response body", err)
-	}
-
-	// Handle errors that are returned in JSON-RPC responses with `200 OK` statuses
-	return response.Err()
+	return &RosettaTypes.Block{
+		BlockIdentifier:       blockIdentifier,
+		ParentBlockIdentifier: parentBlockIdentifier,
+		Timestamp:             convertTime(block.Timestamp),
+		Transactions:          txs,
+		Metadata:              metadata,
+	}, nil
 }

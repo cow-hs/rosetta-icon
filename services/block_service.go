@@ -46,20 +46,11 @@ func (s *BlockAPIService) Block(
 		return nil, ErrUnavailableOffline
 	}
 
-	block, err := s.client.GetBlock(ctx, request.BlockIdentifier)
+	block, err := s.client.GetLastBlock()
 	if err != nil {
 		return nil, wrapErr(ErrWrongBlockHash, err)
 	}
-	return block.ToRosettaResponse()
-}
-
-// BlockTransaction implements the /block/transaction endpoint.
-func (s *BlockAPIService) BlockTransaction(
-	ctx context.Context,
-	request *types.BlockTransactionRequest,
-) (*types.BlockTransactionResponse, *types.Error) {
-	if s.config.Mode != configuration.Online {
+	return &types.BlockResponse{
+		Block: block,
 	}
-
-	return nil, wrapErr(ErrUnimplemented, nil)
 }

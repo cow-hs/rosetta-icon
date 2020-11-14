@@ -14,36 +14,6 @@
 
 package icon
 
-import (
-	"github.com/coinbase/rosetta-sdk-go/types"
-)
-
-var (
-	Currency = &types.Currency{
-		Symbol:   ICXSymbol,
-		Decimals: ICXDecimals,
-	}
-
-	OperationTypes = []string{
-		"TEST",
-	}
-)
-
-const (
-	// Blockchain is ICON.
-	Blockchain string = "ICON"
-
-	// MainnetNetwork is the value of the network
-	// in MainnetNetworkIdentifier.
-	MainnetNetwork string = "Mainnet"
-
-	// TestnetNetwork is the value of the network
-	// in TestnetNetworkIdentifier.
-	TestnetNetwork string = "Testnet"
-
-	ICXSymbol   = "ICX"
-	ICXDecimals = 18
-
-	genesisBlockIndex          = int64(0)
-	HistoricalBalanceSupported = false
-)
+func convertTime(time int64) int64 {
+	return time * 1000
+}
