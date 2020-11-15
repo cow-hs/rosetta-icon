@@ -14,18 +14,14 @@
 
 package main
 
-import (
-	"os"
-
-	"github.com/leeheonseung/rosetta-icon/cmd"
-
-	"github.com/fatih/color"
-)
-
 func main() {
-	err := cmd.Execute()
-	if err != nil {
-		color.Red(err.Error())
-		os.Exit(1)
-	}
+	//err := cmd.Execute()
+	//if err != nil {
+	//	color.Red(err.Error())
+	//	os.Exit(1)
+	//}
+
+	//v := float64(1.2)
+	//i := int64(v)
+	//println(i)
 }

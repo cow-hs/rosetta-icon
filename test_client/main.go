@@ -19,16 +19,16 @@ func main() {
 		return
 	}
 
-	rpcClient := icon.NewClient(cfg.URL, v1_client.Currency)
+	rpcClient := icon.NewClient(cfg.URL, v1_client.ICXCurrency)
 
 	// 이렇게 할당해야하는가?
-	index := int64(1)
+	index := int64(0)
 	params := &types.PartialBlockIdentifier{
 		Index: &index,
 	}
 
 	block, err := rpcClient.GetBlock(params)
-	JsonPrettyPrintln(os.Stdout, block)
+	err = JsonPrettyPrintln(os.Stdout, block)
 	fmt.Print(err)
 }
 

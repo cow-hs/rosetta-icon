@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	Currency = &types.Currency{
+	ICXCurrency = &types.Currency{
 		Symbol:   ICXSymbol,
 		Decimals: ICXDecimals,
 	}
@@ -46,6 +46,14 @@ const (
 
 	genesisBlockIndex          = int64(0)
 	HistoricalBalanceSupported = false
+
+	TreasuryAddress = "hx1000000000000000000000000000000000000000"
+
+	CallOpType = "CALL"
+	FeeOpType  = "FEE"
+
+	SuccessStatus = "SUCCESS"
+	FailStatus    = "FAIL"
 )
 
 type BlockRPCRequest struct {

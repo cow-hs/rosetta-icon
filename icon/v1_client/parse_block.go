@@ -16,10 +16,9 @@ package v1_client
 
 import (
 	"errors"
-	"fmt"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/icon-project/goloop/server/jsonrpc"
-	"strconv"
+	"math/big"
 )
 
 func ParseBlock(raw map[string]interface{}) (*types.Block, error) {
@@ -35,144 +34,279 @@ func ParseBlock(raw map[string]interface{}) (*types.Block, error) {
 
 func Block_0_1a(raw map[string]interface{}) (*types.Block, error) {
 	meta := map[string]interface{}{
-	"version": 					raw["version"],
-	"peer_id":					raw["peer_id"],
-	"signature":				raw["signature"],
-	"next_leader":				raw["next_leader"],
-	"merkle_tree_root_hash": 	raw["merkle_tree_root_hash"],
+		"version":               raw["version"],
+		"peer_id":               raw["peer_id"],
+		"signature":             raw["signature"],
+		"next_leader":           raw["next_leader"],
+		"merkle_tree_root_hash": raw["merkle_tree_root_hash"],
 	}
 
-	// 꼭 이렇게 한번 더 할당해야하는가?
-	txs, _ := ParseTransaction(raw["confirmed_transaction_list"].([]interface{}))
-	fmt.Print(txs)
-
-	index, _ := strconv.ParseInt(raw["height"].(string), 10, 64)
-	timestamp, _ := strconv.ParseInt(raw["time_stamp"].(string), 10, 64) // 1000
+	index := int64(raw["height"].(float64))
+	timestamp := int64(raw["time_stamp"].(float64)) // 1000
 
 	if index == genesisBlockIndex {
+		txs, _ := ParseGenesisTransaction(raw["confirmed_transaction_list"].([]interface{}))
 		return &types.Block{
 			BlockIdentifier: &types.BlockIdentifier{
-				Index: 		index,
-				Hash:  		raw["block_hash"].(string),
+				Index: index,
+				Hash:  raw["block_hash"].(string),
 			},
-			Timestamp: 		timestamp,
-			Transactions: 	nil,
-			Metadata:		meta,
+			Timestamp:    timestamp,
+			Transactions: txs,
+			Metadata:     meta,
 		}, nil
 	} else {
+		txs, _ := ParseTransactions(raw["confirmed_transaction_list"].([]interface{}))
 		return &types.Block{
 			BlockIdentifier: &types.BlockIdentifier{
-				Index: 		index,
-				Hash:  		raw["block_hash"].(string),
+				Index: index,
+				Hash:  raw["block_hash"].(string),
 			},
 			ParentBlockIdentifier: &types.BlockIdentifier{
-				Index: 		index - 1,
-				Hash:  		raw["prev_block_hash"].(string),
+				Index: index - 1,
+				Hash:  raw["prev_block_hash"].(string),
 			},
-			Timestamp: 		timestamp,
-			Transactions: 	nil,
-			Metadata:		meta,
+			Timestamp:    timestamp,
+			Transactions: txs,
+			Metadata:     meta,
 		}, nil
 	}
 }
 
 func Block_0_3(raw map[string]interface{}) (*types.Block, error) {
 	meta := map[string]interface{}{
-		"version": 				raw["version"],
-		"transactionsHash":		raw["transactionsHash"],
-		"stateHash":			raw["stateHash"],
-		"receiptsHash":			raw["receiptsHash"],
-		"repsHash": 			raw["repsHash"],
-		"nextRepsHash": 		raw["nextRepsHash"],
-		"leaderVotesHash": 		raw["leaderVotesHash"],
-		"prevVotesHash": 		raw["prevVotesHash"],
-		"logsBloom": 			raw["logsBloom"],
-		"leaderVotes": 			raw["leaderVotes"],
-		"prevVotes": 			raw["prevVotes"],
-		"leader": 				raw["leader"],
-		"signature": 			raw["signature"],
-		"nextLeader": 			raw["nextLeader"],
+		"version":          raw["version"],
+		"transactionsHash": raw["transactionsHash"],
+		"stateHash":        raw["stateHash"],
+		"receiptsHash":     raw["receiptsHash"],
+		"repsHash":         raw["repsHash"],
+		"nextRepsHash":     raw["nextRepsHash"],
+		"leaderVotesHash":  raw["leaderVotesHash"],
+		"prevVotesHash":    raw["prevVotesHash"],
+		"logsBloom":        raw["logsBloom"],
+		"leaderVotes":      raw["leaderVotes"],
+		"prevVotes":        raw["prevVotes"],
+		"leader":           raw["leader"],
+		"signature":        raw["signature"],
+		"nextLeader":       raw["nextLeader"],
 	}
 
-	txs, _ := ParseTransaction(raw["confirmed_transaction_list"].([]interface{}))
-	fmt.Print(txs)
-
+	txs, _ := ParseTransactions(raw["confirmed_transaction_list"].([]interface{}))
 	index := jsonrpc.HexInt(raw["height"].(string)).Value()
 	timestamp := jsonrpc.HexInt(raw["timestamp"].(string)).Value() // 1000
 
 	if index == genesisBlockIndex {
 		return &types.Block{
 			BlockIdentifier: &types.BlockIdentifier{
-				Index: 		index,
-				Hash:  		raw["hash"].(string),
+				Index: index,
+				Hash:  raw["hash"].(string),
 			},
-			Timestamp: 		timestamp,
-			Transactions: 	nil,
-			Metadata:		meta,
+			Timestamp:    timestamp,
+			Transactions: txs,
+			Metadata:     meta,
 		}, nil
 	} else {
 		return &types.Block{
 			BlockIdentifier: &types.BlockIdentifier{
-				Index: 		index,
-				Hash:  		raw["hash"].(string),
+				Index: index,
+				Hash:  raw["hash"].(string),
 			},
 			ParentBlockIdentifier: &types.BlockIdentifier{
-				Index: 		index - 1,
-				Hash:  		raw["prevHash"].(string),
+				Index: index - 1,
+				Hash:  raw["prevHash"].(string),
 			},
-			Timestamp: 		timestamp,
-			Transactions: 	nil,
-			Metadata:		meta,
+			Timestamp:    timestamp,
+			Transactions: txs,
+			Metadata:     meta,
 		}, nil
 	}
 }
 
-func ParseTransaction(raw []interface{}) (*[]types.Transaction, error) {
-	var transactions []types.Transaction
-	
+func ParseTransactions(raw []interface{}) ([]*types.Transaction, error) {
+	var transactions []*types.Transaction
+
 	for index, transaction := range raw {
 		version := transaction.(map[string]interface{})["version"]
 		switch version {
 		case 3:
 			return nil, nil
-		default :
-			tx, _ := TransactionV2(int64(index), transaction.(map[string]interface{}))
-			transactions = append(transactions, *tx)
+		default:
+			tx, _ := ParseTransactionV2(int64(index), transaction.(map[string]interface{}))
+			transactions = append(transactions, tx)
 		}
 		println(index, transaction)
 	}
-	//switch version {
-	//case 3:
-	//	return nil, nil
-	//default :
-	//	return TransactionV2(raw)
-	//}
-	//return nil, errors.New("Unsupported Transaction Version")
-	return nil, nil
+	return transactions, nil
 }
 
-func TransactionV2(index int64, raw map[string]interface{}) (*types.Transaction, error) {
-	meta := map[string]interface{}{
-	}
-
-	operation := types.Operation{
-		OperationIdentifier: &types.OperationIdentifier{
-			Index: index,
-			NetworkIndex: nil,
-		},
-		RelatedOperations: nil,
-		Type: raw["transfer"].(string),
-		Status: nil,
-		Account: &types.AccountIdentifier{
-			Address:
+func ParseGenesisTransaction(raw []interface{}) ([]*types.Transaction, error) {
+	var transactions []*types.Transaction
+	for index, transaction := range raw {
+		operations, _ := ParseGenesisOperationsV2(transaction.(map[string]interface{}))
+		tx := &types.Transaction{
+			TransactionIdentifier: &types.TransactionIdentifier{
+				Hash: "",
+			},
+			Operations: operations,
+			Metadata:   nil,
 		}
+		transactions = append(transactions, tx)
+		println(index, transaction)
 	}
+	return transactions, nil
+}
 
+func ParseTransactionV2(index int64, raw map[string]interface{}) (*types.Transaction, error) {
+	meta := map[string]interface{}{
+		"nonce":     raw["nonce"],
+		"signature": raw["signature"],
+		"method":    raw["method"],
+	}
+	operations, _ := ParseOperationsV2(index, raw)
 	return &types.Transaction{
 		TransactionIdentifier: &types.TransactionIdentifier{
 			Hash: raw["tx_hash"].(string),
 		},
-		Operations: operation,
-		Metadata: meta,
+		Operations: operations,
+		Metadata:   meta,
 	}, nil
+}
+
+func ParseGenesisOperationsV2(raw map[string]interface{}) ([]*types.Operation, error) {
+	var ops []*types.Operation
+
+	accounts := raw["accounts"].(map[string]interface{})
+	for _, element := range accounts {
+		account := element.(map[string]interface{})
+
+		Value := jsonrpc.HexInt(account["balance "].(string)).Value()
+		pValue := big.NewInt(Value)
+
+		accountOp := &types.Operation{
+			OperationIdentifier: &types.OperationIdentifier{
+				Index: int64(len(ops)),
+			},
+			Type:   CallOpType,
+			Status: SuccessStatus,
+			Account: &types.AccountIdentifier{
+				Address: account["address"].(string),
+			},
+			Amount: &types.Amount{
+				Value:    pValue.String(),
+				Currency: ICXCurrency,
+			},
+			Metadata: map[string]interface{}{
+				"name": account["name"].(string),
+			},
+		}
+		ops = append(ops, accountOp)
+	}
+
+	messageOp := &types.Operation{
+		OperationIdentifier: &types.OperationIdentifier{
+			Index: int64(len(ops)),
+		},
+		Type:   CallOpType,
+		Status: SuccessStatus,
+		Metadata: map[string]interface{}{
+			"message": raw["message"].(string),
+		},
+	}
+	ops = append(ops, messageOp)
+
+	return ops, nil
+}
+
+func ParseOperationsV2(startIndex int64, raw map[string]interface{}) ([]*types.Operation, error) {
+	var ops []*types.Operation
+
+	Value := jsonrpc.HexInt(raw["value"].(string)).Value()
+	pValue := big.NewInt(Value)
+
+	fromOp := &types.Operation{
+		OperationIdentifier: &types.OperationIdentifier{
+			Index: int64(len(ops)) + startIndex,
+		},
+		Type:   CallOpType,
+		Status: "",
+		Account: &types.AccountIdentifier{
+			Address: raw["from"].(string),
+		},
+		Amount: &types.Amount{
+			Value:    new(big.Int).Neg(pValue).String(),
+			Currency: ICXCurrency,
+		},
+	}
+	ops = append(ops, fromOp)
+	lastOpIndex := ops[len(ops)-1].OperationIdentifier.Index
+
+	toOp := &types.Operation{
+		OperationIdentifier: &types.OperationIdentifier{
+			Index: lastOpIndex + 1,
+		},
+		RelatedOperations: []*types.OperationIdentifier{
+			{
+				Index: lastOpIndex,
+			},
+		},
+		Type:   CallOpType,
+		Status: "",
+		Account: &types.AccountIdentifier{
+			Address: raw["to"].(string),
+		},
+		Amount: &types.Amount{
+			Value:    pValue.String(),
+			Currency: ICXCurrency,
+		},
+	}
+	ops = append(ops, toOp)
+	lastOpIndex = ops[len(ops)-1].OperationIdentifier.Index
+
+	fee := jsonrpc.HexInt(raw["fee"].(string)).Value()
+	pFeeValue := big.NewInt(fee)
+
+	feeFromOp := &types.Operation{
+		OperationIdentifier: &types.OperationIdentifier{
+			Index: lastOpIndex + 1,
+		},
+		RelatedOperations: []*types.OperationIdentifier{
+			{
+				Index: lastOpIndex,
+			},
+		},
+		Type:   FeeOpType,
+		Status: "",
+		Account: &types.AccountIdentifier{
+			Address: raw["from"].(string),
+		},
+		Amount: &types.Amount{
+			Value:    new(big.Int).Neg(pFeeValue).String(),
+			Currency: ICXCurrency,
+		},
+	}
+	ops = append(ops, feeFromOp)
+	lastOpIndex = ops[len(ops)-1].OperationIdentifier.Index
+
+	feeToOp := &types.Operation{
+		OperationIdentifier: &types.OperationIdentifier{
+			Index: lastOpIndex + 1,
+		},
+		RelatedOperations: []*types.OperationIdentifier{
+			{
+				Index: lastOpIndex,
+			},
+		},
+		Type:   FeeOpType,
+		Status: "",
+		Account: &types.AccountIdentifier{
+			Address: TreasuryAddress,
+		},
+		Amount: &types.Amount{
+			Value:    pFeeValue.String(),
+			Currency: ICXCurrency,
+		},
+	}
+	ops = append(ops, feeToOp)
+
+	return ops, nil
 }
