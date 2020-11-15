@@ -15,6 +15,7 @@
 package services
 
 import (
+	"context"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/leeheonseung/rosetta-icon/configuration"
 	"github.com/leeheonseung/rosetta-icon/icon"
@@ -37,6 +38,7 @@ func NewBlockAPIService(
 
 // Block implements the /block endpoint.
 func (s *BlockAPIService) Block(
+	ctx context.Context,
 	request *types.BlockRequest,
 ) (*types.BlockResponse, *types.Error) {
 	if s.config.Mode != configuration.Online {
@@ -50,4 +52,12 @@ func (s *BlockAPIService) Block(
 	return &types.BlockResponse{
 		Block: block,
 	}, nil
+}
+
+// BlockTransaction implements the /block/transaction endpoint.
+func (s *BlockAPIService) BlockTransaction(
+	ctx context.Context,
+	request *types.BlockTransactionRequest,
+) (*types.BlockTransactionResponse, *types.Error) {
+	return nil, wrapErr(ErrUnimplemented, nil)
 }

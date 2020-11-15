@@ -6,8 +6,7 @@ import (
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/leeheonseung/rosetta-icon/configuration"
 	"github.com/leeheonseung/rosetta-icon/icon"
-	"github.com/leeheonseung/rosetta-icon/icon/v1_client"
-
+	"github.com/leeheonseung/rosetta-icon/icon/client_v1"
 	"io"
 	"os"
 )
@@ -19,10 +18,10 @@ func main() {
 		return
 	}
 
-	rpcClient := icon.NewClient(cfg.URL, v1_client.ICXCurrency)
+	rpcClient := icon.NewClient(cfg.URL, client_v1.ICXCurrency)
 
 	// 이렇게 할당해야하는가?
-	index := int64(0)
+	index := int64(1)
 	params := &types.PartialBlockIdentifier{
 		Index: &index,
 	}

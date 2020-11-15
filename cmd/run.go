@@ -18,13 +18,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/leeheonseung/rosetta-icon/icon/v1_client"
+	"github.com/leeheonseung/rosetta-icon/icon"
+	"github.com/leeheonseung/rosetta-icon/icon/client_v1"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/leeheonseung/rosetta-icon/configuration"
-	"github.com/leeheonseung/rosetta-icon/icon"
 	"github.com/leeheonseung/rosetta-icon/services"
 
 	"github.com/coinbase/rosetta-sdk-go/asserter"
@@ -66,8 +66,8 @@ func runRunCmd(cmd *cobra.Command, args []string) error {
 	// The asserter automatically rejects incorrectly formatted
 	// requests.
 	asserter, err := asserter.NewServer(
-		v1_client.OperationTypes,
-		v1_client.HistoricalBalanceSupported,
+		client_v1.OperationTypes,
+		client_v1.HistoricalBalanceSupported,
 		[]*types.NetworkIdentifier{cfg.Network},
 		nil,
 	)
@@ -82,7 +82,7 @@ func runRunCmd(cmd *cobra.Command, args []string) error {
 
 	g, ctx := errgroup.WithContext(ctx)
 
-	client := icon.NewClient(cfg.URL, v1_client.ICXCurrency)
+	client := icon.NewClient(cfg.URL, client_v1.ICXCurrency)
 	router := services.NewBlockchainRouter(cfg, client, asserter)
 
 	loggedRouter := server.LoggerMiddleware(router)

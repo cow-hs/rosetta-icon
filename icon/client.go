@@ -19,11 +19,11 @@ import (
 	"fmt"
 	RosettaTypes "github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/icon-project/goloop/common"
-	iconV1 "github.com/leeheonseung/rosetta-icon/icon/v1_client"
+	"github.com/leeheonseung/rosetta-icon/icon/client_v1"
 )
 
 // Client is used to fetch blocks from ICON Node and
-// to parse ICON block data into Rosetta types.
+// to parser ICON block data into Rosetta types.
 //
 // We opted not to use existing ICON RPC libraries
 // because they don't allow providing context
@@ -31,7 +31,7 @@ import (
 
 type Client struct {
 	currency *RosettaTypes.Currency
-	iconV1   *iconV1.ClientV3
+	iconV1   *client_v1.ClientV3
 }
 
 func NewClient(
@@ -40,26 +40,26 @@ func NewClient(
 ) *Client {
 	return &Client{
 		currency,
-		iconV1.NewClientV3(endpoint),
+		client_v1.NewClientV3(endpoint),
 	}
 }
 
 func (ic *Client) GetBlock(params *RosettaTypes.PartialBlockIdentifier) (*RosettaTypes.Block, error) {
 
 	//이렇게 하는 방법밖에 없는가?
-	var reqParams *iconV1.BlockRPCRequest
+	var reqParams *client_v1.BlockRPCRequest
 	if params.Index != nil && params.Hash != nil {
 		return nil, errors.New("Invalid Both value")
 	} else if params.Hash != nil {
-		reqParams = &iconV1.BlockRPCRequest{
+		reqParams = &client_v1.BlockRPCRequest{
 			Hash: *params.Hash,
 		}
 	} else if params.Index != nil {
-		reqParams = &iconV1.BlockRPCRequest{
-			Height: common.HexInt64{*params.Index}.String(),
+		reqParams = &client_v1.BlockRPCRequest{
+			Height: common.HexInt64{Value: *params.Index}.String(),
 		}
 	} else {
-		reqParams = &iconV1.BlockRPCRequest{}
+		reqParams = &client_v1.BlockRPCRequest{}
 	}
 
 	block, err := ic.iconV1.GetBlock(reqParams)
@@ -70,11 +70,10 @@ func (ic *Client) GetBlock(params *RosettaTypes.PartialBlockIdentifier) (*Rosett
 	//Get transactionResults
 	//RPCServer, LoopChain branch참고: append_icx_getBlockReceipts
 
-	trsRaw, err := ic.iconV1.GetBlockReceipts(reqParams)
-	if err != nil {
-		return nil, fmt.Errorf("%w: could not get block", err)
-	}
-
-	fmt.Print(trsRaw)
+	//trsRaw, err := ic.iconV1.GetBlockReceipts(reqParams)
+	//if err != nil {
+	//	return nil, fmt.Errorf("%w: could not get block", err)
+	//}
+	//fmt.Print(trsRaw)
 	return block, nil
 }

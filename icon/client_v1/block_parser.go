@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package v1_client
+package client_v1
 
 import (
 	"errors"
 	"github.com/coinbase/rosetta-sdk-go/types"
-	"github.com/icon-project/goloop/server/jsonrpc"
 	"math/big"
 )
 
@@ -44,7 +43,7 @@ func Block_0_1a(raw map[string]interface{}) (*types.Block, error) {
 	index := int64(raw["height"].(float64))
 	timestamp := int64(raw["time_stamp"].(float64)) // 1000
 
-	if index == genesisBlockIndex {
+	if index == GenesisBlockIndex {
 		txs, _ := ParseGenesisTransaction(raw["confirmed_transaction_list"].([]interface{}))
 		return &types.Block{
 			BlockIdentifier: &types.BlockIdentifier{
@@ -92,10 +91,16 @@ func Block_0_3(raw map[string]interface{}) (*types.Block, error) {
 	}
 
 	txs, _ := ParseTransactions(raw["confirmed_transaction_list"].([]interface{}))
-	index := jsonrpc.HexInt(raw["height"].(string)).Value()
-	timestamp := jsonrpc.HexInt(raw["timestamp"].(string)).Value() // 1000
 
-	if index == genesisBlockIndex {
+	indexBig := new(big.Int)
+	indexBig.SetString(raw["height"].(string)[2:], 16)
+	index := indexBig.Int64()
+
+	timestampBig := new(big.Int)
+	timestampBig.SetString(raw["timestamp"].(string)[2:], 16) // 1000
+	timestamp := timestampBig.Int64()
+
+	if index == GenesisBlockIndex {
 		return &types.Block{
 			BlockIdentifier: &types.BlockIdentifier{
 				Index: index,
@@ -175,12 +180,9 @@ func ParseTransactionV2(index int64, raw map[string]interface{}) (*types.Transac
 func ParseGenesisOperationsV2(raw map[string]interface{}) ([]*types.Operation, error) {
 	var ops []*types.Operation
 
-	accounts := raw["accounts"].(map[string]interface{})
+	accounts := raw["accounts"].([]interface{})
 	for _, element := range accounts {
 		account := element.(map[string]interface{})
-
-		Value := jsonrpc.HexInt(account["balance "].(string)).Value()
-		pValue := big.NewInt(Value)
 
 		accountOp := &types.Operation{
 			OperationIdentifier: &types.OperationIdentifier{
@@ -192,7 +194,7 @@ func ParseGenesisOperationsV2(raw map[string]interface{}) ([]*types.Operation, e
 				Address: account["address"].(string),
 			},
 			Amount: &types.Amount{
-				Value:    pValue.String(),
+				Value:    account["balance"].(string),
 				Currency: ICXCurrency,
 			},
 			Metadata: map[string]interface{}{
@@ -213,15 +215,14 @@ func ParseGenesisOperationsV2(raw map[string]interface{}) ([]*types.Operation, e
 		},
 	}
 	ops = append(ops, messageOp)
-
 	return ops, nil
 }
 
 func ParseOperationsV2(startIndex int64, raw map[string]interface{}) ([]*types.Operation, error) {
 	var ops []*types.Operation
 
-	Value := jsonrpc.HexInt(raw["value"].(string)).Value()
-	pValue := big.NewInt(Value)
+	value := new(big.Int)
+	value.SetString(raw["value"].(string)[2:], 16)
 
 	fromOp := &types.Operation{
 		OperationIdentifier: &types.OperationIdentifier{
@@ -233,7 +234,7 @@ func ParseOperationsV2(startIndex int64, raw map[string]interface{}) ([]*types.O
 			Address: raw["from"].(string),
 		},
 		Amount: &types.Amount{
-			Value:    new(big.Int).Neg(pValue).String(),
+			Value:    new(big.Int).Neg(value).String(),
 			Currency: ICXCurrency,
 		},
 	}
@@ -255,15 +256,15 @@ func ParseOperationsV2(startIndex int64, raw map[string]interface{}) ([]*types.O
 			Address: raw["to"].(string),
 		},
 		Amount: &types.Amount{
-			Value:    pValue.String(),
+			Value:    value.String(),
 			Currency: ICXCurrency,
 		},
 	}
 	ops = append(ops, toOp)
 	lastOpIndex = ops[len(ops)-1].OperationIdentifier.Index
 
-	fee := jsonrpc.HexInt(raw["fee"].(string)).Value()
-	pFeeValue := big.NewInt(fee)
+	fee := new(big.Int)
+	fee.SetString(raw["fee"].(string)[2:], 16)
 
 	feeFromOp := &types.Operation{
 		OperationIdentifier: &types.OperationIdentifier{
@@ -280,7 +281,7 @@ func ParseOperationsV2(startIndex int64, raw map[string]interface{}) ([]*types.O
 			Address: raw["from"].(string),
 		},
 		Amount: &types.Amount{
-			Value:    new(big.Int).Neg(pFeeValue).String(),
+			Value:    new(big.Int).Neg(fee).String(),
 			Currency: ICXCurrency,
 		},
 	}
@@ -302,11 +303,10 @@ func ParseOperationsV2(startIndex int64, raw map[string]interface{}) ([]*types.O
 			Address: TreasuryAddress,
 		},
 		Amount: &types.Amount{
-			Value:    pFeeValue.String(),
+			Value:    fee.String(),
 			Currency: ICXCurrency,
 		},
 	}
 	ops = append(ops, feeToOp)
-
 	return ops, nil
 }

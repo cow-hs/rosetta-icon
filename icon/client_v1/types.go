@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package v1_client
+package client_v1
 
 import (
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -44,7 +44,7 @@ const (
 	ICXSymbol   = "ICX"
 	ICXDecimals = 18
 
-	genesisBlockIndex          = int64(0)
+	GenesisBlockIndex          = int64(0)
 	HistoricalBalanceSupported = false
 
 	TreasuryAddress = "hx1000000000000000000000000000000000000000"

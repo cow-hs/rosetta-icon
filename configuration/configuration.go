@@ -18,7 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/coinbase/rosetta-sdk-go/types"
-	"github.com/leeheonseung/rosetta-icon/icon/v1_client"
+	"github.com/leeheonseung/rosetta-icon/icon/client_v1"
 	"os"
 	"strconv"
 	"strings"
@@ -98,13 +98,13 @@ func LoadConfiguration() (*Configuration, error) {
 	switch networkValue {
 	case Mainnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: v1_client.Blockchain,
-			Network:    v1_client.MainnetNetwork,
+			Blockchain: client_v1.Blockchain,
+			Network:    client_v1.MainnetNetwork,
 		}
 	case Testnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: v1_client.Blockchain,
-			Network:    v1_client.TestnetNetwork,
+			Blockchain: client_v1.Blockchain,
+			Network:    client_v1.TestnetNetwork,
 		}
 	case "":
 		return nil, errors.New("NETWORK must be populated")
@@ -152,7 +152,7 @@ func LoadConfiguration() (*Configuration, error) {
 
 	port, err := strconv.Atoi(envPort)
 	if err != nil || len(envPort) == 0 || port <= 0 {
-		return nil, fmt.Errorf("%w: unable to parse port %s", err, envPort)
+		return nil, fmt.Errorf("%w: unable to parser port %s", err, envPort)
 	}
 	config.Port = port
 
