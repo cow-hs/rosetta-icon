@@ -26,10 +26,4 @@ type Client interface {
 		context.Context,
 		*types.PartialBlockIdentifier,
 	) (*types.Block, error)
-
-	GetBlockTransaction(
-		context.Context,
-		*types.BlockIdentifier,
-		*types.TransactionIdentifier,
-	) (*types.Transaction, error)
 }

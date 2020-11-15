@@ -15,9 +15,11 @@
 package icon
 
 import (
+	"errors"
 	"fmt"
 	RosettaTypes "github.com/coinbase/rosetta-sdk-go/types"
-	icon_v1 "github.com/leeheonseung/rosetta-icon/icon/v1_client"
+	"github.com/icon-project/goloop/common"
+	iconV1 "github.com/leeheonseung/rosetta-icon/icon/v1_client"
 )
 
 // Client is used to fetch blocks from ICON Node and
@@ -29,7 +31,7 @@ import (
 
 type Client struct {
 	currency *RosettaTypes.Currency
-	iconV1   *icon_v1.ClientV3
+	iconV1   *iconV1.ClientV3
 }
 
 func NewClient(
@@ -38,41 +40,41 @@ func NewClient(
 ) *Client {
 	return &Client{
 		currency,
-		icon_v1.NewClientV3(endpoint),
+		iconV1.NewClientV3(endpoint),
 	}
 }
 
-func (ic *Client) GetLastBlock() (*RosettaTypes.Block, error) {
+func (ic *Client) GetBlock(params *RosettaTypes.PartialBlockIdentifier) (*RosettaTypes.Block, error) {
 
-	block, err := ic.iconV1.GetLastBlock()
-	if err != nil {
-		return nil, fmt.Errorf("%w: could not get last block", err)
-	}
-
-	blockIdentifier := &RosettaTypes.BlockIdentifier{
-		Hash:  string(block.BlockHash),
-		Index: block.Height,
-	}
-
-	parentBlockIdentifier := blockIdentifier
-
-	if blockIdentifier.Index != genesisBlockIndex {
-		parentBlockIdentifier = &RosettaTypes.BlockIdentifier{
-			Hash:  string(block.PrevID),
-			Index: blockIdentifier.Index - 1,
+	//이렇게 하는 방법밖에 없는가?
+	var reqParams *iconV1.BlockRPCRequest
+	if params.Index != nil && params.Hash != nil {
+		return nil, errors.New("Invalid Both value")
+	} else if params.Hash != nil {
+		reqParams = &iconV1.BlockRPCRequest{
+			Hash: *params.Hash,
 		}
+	} else if params.Index != nil {
+		reqParams = &iconV1.BlockRPCRequest{
+			Height: common.HexInt64{*params.Index}.String(),
+		}
+	} else {
+		reqParams = &iconV1.BlockRPCRequest{}
 	}
 
-	metadata, err := block.Metadata()
+	block, err := ic.iconV1.GetBlock(reqParams)
 	if err != nil {
-		return nil, fmt.Errorf("%w: could not get block metadata", err)
+		return nil, fmt.Errorf("%w: could not get block", err)
 	}
 
-	return &RosettaTypes.Block{
-		BlockIdentifier:       blockIdentifier,
-		ParentBlockIdentifier: parentBlockIdentifier,
-		Timestamp:             convertTime(block.Timestamp),
-		Transactions:          txs,
-		Metadata:              metadata,
-	}, nil
+	//Get transactionResults
+	//RPCServer, LoopChain branch참고: append_icx_getBlockReceipts
+
+	trsRaw, err := ic.iconV1.GetBlockReceipts(reqParams)
+	if err != nil {
+		return nil, fmt.Errorf("%w: could not get block", err)
+	}
+
+	fmt.Print(trsRaw)
+	return block, nil
 }

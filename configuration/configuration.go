@@ -18,7 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/coinbase/rosetta-sdk-go/types"
-	"github.com/leeheonseung/rosetta-icon/icon"
+	"github.com/leeheonseung/rosetta-icon/icon/v1_client"
 	"os"
 	"strconv"
 	"strings"
@@ -98,13 +98,13 @@ func LoadConfiguration() (*Configuration, error) {
 	switch networkValue {
 	case Mainnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: icon.Blockchain,
-			Network:    icon.MainnetNetwork,
+			Blockchain: v1_client.Blockchain,
+			Network:    v1_client.MainnetNetwork,
 		}
 	case Testnet:
 		config.Network = &types.NetworkIdentifier{
-			Blockchain: icon.Blockchain,
-			Network:    icon.TestnetNetwork,
+			Blockchain: v1_client.Blockchain,
+			Network:    v1_client.TestnetNetwork,
 		}
 	case "":
 		return nil, errors.New("NETWORK must be populated")

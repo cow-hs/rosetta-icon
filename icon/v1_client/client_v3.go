@@ -15,6 +15,7 @@
 package v1_client
 
 import (
+	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/icon-project/goloop/server/jsonrpc"
 	v3 "github.com/icon-project/goloop/server/v3"
 	"net/http"
@@ -56,40 +57,50 @@ func NewClientV3(endpoint string) *ClientV3 {
 	}
 }
 
-func (c *ClientV3) GetLastBlock() (*Block, error) {
-	blk := &Block{}
-	_, err := c.Do("icx_getLastBlock", nil, blk)
+func (c *ClientV3) GetBlock(param *BlockRPCRequest) (*types.Block, error) {
+	blockRaw := map[string]interface{}{}
+
+	_, err := c.Do("icx_getBlock", param, &blockRaw)
 	if err != nil {
 		return nil, err
 	}
-	return blk, nil
+
+	// TODO Block을 Version에 맞춰서 변환
+	block, err := ParseBlock(blockRaw)
+	if err != nil {
+		return nil, err
+	}
+	return block, nil
 }
 
-func (c *ClientV3) GetBlockByHeight(param *v3.BlockHeightParam) (*Block, error) {
-	blk := &Block{}
-	_, err := c.Do("icx_getBlockByHeight", param, blk)
+func (c *ClientV3) GetBlockReceipts(param *BlockRPCRequest) (interface{}, error) {
+	trsRaw := map[string]interface{}{}
+
+	_, err := c.Do("icx_getBlockReceipts", param, trsRaw)
 	if err != nil {
 		return nil, err
 	}
-	return blk, nil
+	return trsRaw, nil
 }
 
-func (c *ClientV3) GetBlockByHash(param *v3.BlockHashParam) (*Block, error) {
-	blk := &Block{}
-	_, err := c.Do("icx_getBlockByHash", param, blk)
+func (c *ClientV3) GetTransaction(param *TransactionRPCRequest) (interface{}, error) {
+	txRaw := map[string]interface{}{}
+
+	_, err := c.Do("icx_getTransactionByHash", param, txRaw)
 	if err != nil {
 		return nil, err
 	}
-	return blk, nil
+	return txRaw, nil
 }
 
-func (c *ClientV3) Call(param *v3.CallParam) (interface{}, error) {
-	var result interface{}
-	_, err := c.Do("icx_call", param, &result)
+func (c *ClientV3) GetTransactionResult(param *TransactionRPCRequest) (interface{}, error) {
+	trRaw := map[string]interface{}{}
+
+	_, err := c.Do("icx_getTransactionResult", param, trRaw)
 	if err != nil {
 		return nil, err
 	}
-	return result, nil
+	return trRaw, nil
 }
 
 func (c *ClientV3) GetBalance(param *v3.AddressParam) (*jsonrpc.HexInt, error) {
@@ -101,15 +112,6 @@ func (c *ClientV3) GetBalance(param *v3.AddressParam) (*jsonrpc.HexInt, error) {
 	return &result, nil
 }
 
-func (c *ClientV3) GetScoreApi(param *v3.ScoreAddressParam) ([]interface{}, error) {
-	var result []interface{}
-	_, err := c.Do("icx_getScoreApi", param, &result)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
 func (c *ClientV3) GetTotalSupply() (*jsonrpc.HexInt, error) {
 	var result jsonrpc.HexInt
 	_, err := c.Do("icx_getTotalSupply", nil, &result)
@@ -117,30 +119,4 @@ func (c *ClientV3) GetTotalSupply() (*jsonrpc.HexInt, error) {
 		return nil, err
 	}
 	return &result, nil
-}
-
-func (c *ClientV3) GetTransactionResult(param *v3.TransactionHashParam) (*TransactionResult, error) {
-	tr := &TransactionResult{}
-	_, err := c.Do("icx_getTransactionResult", param, tr)
-	if err != nil {
-		return nil, err
-	}
-	return tr, nil
-}
-
-func (c *ClientV3) WaitTransactionResult(param *v3.TransactionHashParam) (*TransactionResult, error) {
-	tr := &TransactionResult{}
-	if _, err := c.Do("icx_waitTransactionResult", param, tr); err != nil {
-		return nil, err
-	}
-	return tr, nil
-}
-
-func (c *ClientV3) GetTransactionByHash(param *v3.TransactionHashParam) (*Transaction, error) {
-	t := &Transaction{}
-	_, err := c.Do("icx_getTransactionByHash", param, t)
-	if err != nil {
-		return nil, err
-	}
-	return t, nil
 }
