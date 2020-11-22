@@ -120,3 +120,42 @@ func (c *ClientV3) GetTotalSupply() (*jsonrpc.HexInt, error) {
 	}
 	return &result, nil
 }
+
+func (c *ClientV3) GetMainPReps() (*map[string]interface{}, error) {
+	resp := map[string]interface{}{}
+
+	params := map[string]interface{}{
+		"to":       "cx0000000000000000000000000000000000000000",
+		"dataType": "call",
+		"data": map[string]interface{}{
+			"method": "getMainPReps",
+		},
+	}
+
+	_, err := c.Do("icx_call", params, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (c *ClientV3) GetPRep(prep string) (*map[string]interface{}, error) {
+	resp := map[string]interface{}{}
+
+	params := map[string]interface{}{
+		"to":       "cx0000000000000000000000000000000000000000",
+		"dataType": "call",
+		"data": map[string]interface{}{
+			"method": "getPRep",
+			"params": map[string]interface{}{
+				"address": prep,
+			},
+		},
+	}
+
+	_, err := c.Do("icx_call", params, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}

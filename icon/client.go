@@ -77,3 +77,24 @@ func (ic *Client) GetBlock(params *RosettaTypes.PartialBlockIdentifier) (*Rosett
 	//fmt.Print(trsRaw)
 	return block, nil
 }
+
+func (ic *Client) GetPeer() ([]*RosettaTypes.Peer, error) {
+	resp, err := ic.iconV1.GetMainPReps()
+	if err != nil {
+		return nil, fmt.Errorf("%w: could not get peer", err)
+	}
+
+	var peers []*RosettaTypes.Peer
+	preps := (*resp)["preps"]
+
+	for _, element := range preps.([]interface{}) {
+		address := element.(map[string]interface{})["address"]
+		resp, _ := ic.iconV1.GetPRep(address.(string))
+		peers = append(peers, &RosettaTypes.Peer{
+			PeerID:   address.(string),
+			Metadata: *resp,
+		})
+	}
+
+	return peers, nil
+}

@@ -27,6 +27,22 @@ var (
 	OperationTypes = []string{
 		"TEST",
 	}
+
+	// OperationStatuses are all supported operation statuses.
+	OperationStatuses = []*types.OperationStatus{
+		{
+			Status:     SuccessStatus,
+			Successful: true,
+		},
+		{
+			Status:     FailureStatus,
+			Successful: false,
+		},
+	}
+
+	MiddlewareVersion = "0.0.1"
+	RosettaVersion    = "1.4.0"
+	NodeVersion       = "1.8.0"
 )
 
 const (
@@ -53,7 +69,7 @@ const (
 	FeeOpType  = "FEE"
 
 	SuccessStatus = "SUCCESS"
-	FailStatus    = "FAIL"
+	FailureStatus = "FAIL"
 )
 
 type BlockRPCRequest struct {
