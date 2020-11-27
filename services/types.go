@@ -17,6 +17,7 @@ package services
 import (
 	"context"
 	"github.com/coinbase/rosetta-sdk-go/types"
+	"math/big"
 )
 
 // Client is used by the servicers to get block
@@ -26,4 +27,12 @@ type Client interface {
 		context.Context,
 		*types.PartialBlockIdentifier,
 	) (*types.Block, error)
+}
+
+type options struct {
+	From string `json:"from"`
+}
+
+type metadata struct {
+	StepPrice *big.Int `json:"stepPrice"`
 }

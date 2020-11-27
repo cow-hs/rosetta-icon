@@ -50,6 +50,44 @@ var (
 		Retriable: true,
 	}
 
+	// ErrUnableToDecompressPubkey is returned when
+	// the *types.PublicKey provided in /construction/derive
+	// cannot be decompressed.
+	ErrUnableToDecompressPubkey = &types.Error{
+		Code:    3, //nolint
+		Message: "unable to decompress public key",
+	}
+
+	// ErrUnclearIntent is returned when operations
+	// provided in /construction/preprocess or /construction/payloads
+	// are not valid.
+	ErrUnclearIntent = &types.Error{
+		Code:    4, //nolint
+		Message: "Unable to parse intent",
+	}
+
+	// ErrUnableToParseIntermediateResult is returned
+	// when a data structure passed between Construction
+	// API calls is not valid.
+	ErrUnableToParseIntermediateResult = &types.Error{
+		Code:    5, //nolint
+		Message: "Unable to parse intermediate result",
+	}
+
+	// ErrSignatureInvalid is returned when a signature
+	// cannot be parsed.
+	ErrSignatureInvalid = &types.Error{
+		Code:    6, //nolint
+		Message: "Signature invalid",
+	}
+
+	// ErrInvalidAddress is returned when an address
+	// is not valid.
+	ErrInvalidAddress = &types.Error{
+		Code:    12, //nolint
+		Message: "Invalid address",
+	}
+
 	// ErrNotReady is returned when ICON Node is not
 	// yet ready to serve queries.
 	ErrWrongBlockHash = &types.Error{
