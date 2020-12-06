@@ -301,7 +301,94 @@ func (s *ConstructionAPIService) ConstructionParse(
 	ctx context.Context,
 	request *types.ConstructionParseRequest,
 ) (*types.ConstructionParseResponse, *types.Error) {
-	return nil, nil
+	var tx client_v1.TransactionV3
+	if !request.Signed {
+		err := json.Unmarshal([]byte(request.Transaction), &tx)
+		if err != nil {
+			return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
+		}
+	} else {
+		t := new(client_v1.TransactionV3WithSig)
+		err := t.UnmarshalJSON([]byte(request.Transaction))
+		if err != nil {
+			return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
+		}
+
+	}
+
+	err := icon.CheckAddress(tx.From.String())
+	if err != nil {
+		return nil, wrapErr(err, fmt.Errorf("%s is not a valid address", tx.From.String()))
+	}
+
+	err = icon.CheckAddress(tx.From.String())
+	if err != nil {
+		return nil, wrapErr(err, fmt.Errorf("%s is not a valid address", tx.To))
+	}
+
+	ops := []*types.Operation{
+		{
+			Type: client_v1.CallOpType,
+			OperationIdentifier: &types.OperationIdentifier{
+				Index: 0,
+			},
+			Account: &types.AccountIdentifier{
+				Address: tx.From.String(),
+			},
+			Amount: &types.Amount{
+				Value:    tx.Value.String(),
+				Currency: client_v1.ICXCurrency,
+			},
+		},
+		{
+			Type: client_v1.CallOpType,
+			OperationIdentifier: &types.OperationIdentifier{
+				Index: 1,
+			},
+			RelatedOperations: []*types.OperationIdentifier{
+				{
+					Index: 0,
+				},
+			},
+			Account: &types.AccountIdentifier{
+				Address: tx.To.String(),
+			},
+			Amount: &types.Amount{
+				Value:    tx.Value.String(),
+				Currency: client_v1.ICXCurrency,
+			},
+		},
+	}
+
+	metadata := &parseMetadata{
+		Nonce:    tx.Nonce,
+		GasPrice: tx.GasPrice,
+		ChainID:  tx.ChainID,
+	}
+	metaMap, err := marshalJSONMap(metadata)
+	if err != nil {
+		return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
+	}
+
+	var resp *types.ConstructionParseResponse
+	if request.Signed {
+		resp = &types.ConstructionParseResponse{
+			Operations: ops,
+			AccountIdentifierSigners: []*types.AccountIdentifier{
+				{
+					Address: tx.From.String(),
+				},
+			},
+			Metadata: metaMap,
+		}
+	} else {
+		resp = &types.ConstructionParseResponse{
+			Operations:               ops,
+			AccountIdentifierSigners: []*types.AccountIdentifier{},
+			Metadata:                 metaMap,
+		}
+	}
+	return resp, nil
 }
 
 func (s *ConstructionAPIService) ConstructionSubmit(

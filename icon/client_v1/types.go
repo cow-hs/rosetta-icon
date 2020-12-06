@@ -22,6 +22,7 @@ import (
 	"github.com/icon-project/goloop/common/crypto"
 	"github.com/icon-project/goloop/service/transaction"
 	"math/big"
+	"time"
 )
 
 var (
@@ -199,6 +200,17 @@ func (tx *TransactionV3WithSig) TxHash() []byte {
 		}
 	}
 	return tx.Hash
+}
+
+func (tx *TransactionV3WithSig) UnmarshalJSON(input []byte) error {
+	if err := json.Unmarshal(input, tx); err != nil {
+		return err
+	}
+	if tx.VerifySignature() != nil {
+		return transaction.InvalidSignatureError.New("failed to verify signature")
+	}
+	tx.Timestamp = common.HexInt64{Value: time.Now().UTC().UnixNano()}
+	return nil
 }
 
 func ParseV3JSON(js []byte, raw bool) (*TransactionV3, error) {
