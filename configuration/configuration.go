@@ -72,11 +72,13 @@ const (
 
 // Configuration determines how
 type Configuration struct {
-	Mode     Mode
-	Network  *types.NetworkIdentifier
-	URL      string
-	DebugURL string
-	Port     int
+	Mode                   Mode
+	Network                *types.NetworkIdentifier
+	URL                    string
+	DebugURL               string
+	Port                   int
+	IndexerPath            string
+	GenesisBlockIdentifier *types.BlockIdentifier
 }
 
 // LoadConfiguration attempts to create a new Configuration
@@ -103,16 +105,31 @@ func LoadConfiguration() (*Configuration, error) {
 			Blockchain: client_v1.Blockchain,
 			Network:    client_v1.MainnetNetwork,
 		}
+		config.GenesisBlockIdentifier = &types.BlockIdentifier{
+			Index: 0,
+			Hash:  "cf43b3fd45981431a0e64f79d07bfcf703e064b73b802c5f32834eec72142190",
+		}
+		config.IndexerPath = ".dataIndexerMainNet"
 	case Testnet:
 		config.Network = &types.NetworkIdentifier{
 			Blockchain: client_v1.Blockchain,
 			Network:    client_v1.TestnetNetwork,
 		}
+		config.GenesisBlockIdentifier = &types.BlockIdentifier{
+			Index: 0,
+			Hash:  "b538bcceb71140654065828a8008a940d5b072322bcf11331d79a09a22666b75",
+		}
+		config.IndexerPath = ".dataIndexerTestNet"
 	case Devnet:
 		config.Network = &types.NetworkIdentifier{
 			Blockchain: client_v1.Blockchain,
 			Network:    client_v1.DevelopNetwork,
 		}
+		config.GenesisBlockIdentifier = &types.BlockIdentifier{
+			Index: 0,
+			Hash:  "778090b4dfa44efad6fa0cf21e6516c818d39dfb90a2011c86a7e08247ef098a",
+		}
+		config.IndexerPath = ".dataIndexerDevNet"
 	case "":
 		return nil, errors.New("NETWORK must be populated")
 	default:
