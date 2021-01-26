@@ -25,7 +25,14 @@ var (
 		ErrUnimplemented,
 		ErrUnavailableOffline,
 		ErrNotReady,
+		ErrUnableToDecompressPubkey,
+		ErrUnclearIntent,
+		ErrUnableToParseIntermediateResult,
+		ErrSignatureInvalid,
+		ErrBroadcastFailed,
 		ErrWrongBlockHash,
+		ErrTransactionNotFound,
+		ErrUnableToGetBalance,
 	}
 
 	// ErrUnimplemented is returned when an endpoint
@@ -88,19 +95,27 @@ var (
 		Message: "Unable to broadcast transaction",
 	}
 
-	// ErrInvalidAddress is returned when an address
-	// is not valid.
-	ErrInvalidAddress = &types.Error{
-		Code:    12, //nolint
-		Message: "Invalid address",
-	}
-
 	// ErrNotReady is returned when ICON Node is not
 	// yet ready to serve queries.
 	ErrWrongBlockHash = &types.Error{
 		Code:      13,
 		Message:   "Wrong Block Hash",
 		Retriable: true,
+	}
+
+	// ErrTransactionNotFound is returned by the indexer
+	// when it is not possible to find a transaction.
+	ErrTransactionNotFound = &types.Error{
+		Code:    16, // nolint
+		Message: "Transaction not found",
+	}
+
+	// ErrUnableToGetBalance is returned by the i
+	// when it is not possible to get the balance
+	// of a *types.AccountIdentifier.
+	ErrUnableToGetBalance = &types.Error{
+		Code:    18, //nolint
+		Message: "Unable to get balance",
 	}
 )
 

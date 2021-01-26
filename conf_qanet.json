@@ -1,0 +1,159 @@
+{
+  "uri": "http://15.188.141.211:9000/api/v3",
+  "nid": 80,
+  "god": "e88c5dc27eadd2f5b7b30214e23699e8ce9e97744655fae7f8320fca65b41da3",
+  "builtinScoreOwner": "8b1a3f082fe02e5ff5c43b8a07ea75a4ccf39f41ee1f7d3d20acf2149205b3f0",
+  "preps": [
+    {
+      "address": "hxd2301d66ad53b7dcc8c07807687c57162cbb54a8",
+      "private_key": "6de5d79c681bb324aae2670e8093ba4a655c0abe69bdc8e7f517b5c77bb2f93f",
+      "p2p_endpoint": "15.188.141.211:7100"
+    },
+    {
+      "address": "hxde11587ab4268460fdc1f9f903978302957583df",
+      "private_key": "19031e13741298a9e262d44166198f00194e5dc8f541e75d2572314ac3dae393",
+      "p2p_endpoint": "15.188.158.57:7100"
+    },
+    {
+      "address": "hxe6080b42dd1c70dc3ce15ff73c19d9256ec2f76c",
+      "private_key": "a6135bedf9eaea0f7bb8ee00d22901ada1c17a1d6e6663946186cb5313a2b307",
+      "p2p_endpoint": "3.10.182.244:7100"
+    },
+    {
+      "address": "hxdbb78824841621ea768c25611991a41122d48683",
+      "private_key": "7ab80d0897e9e17133d70e0c52b3c04a6483f81fce3d704c978a938940a2f41f",
+      "p2p_endpoint": "52.8.54.33:7100"
+    },
+    {
+      "address": "hx4ae5c53d055e44316d6766d5e97d67af61c50851",
+      "private_key": "e3c594b4fc5c0e95e0d2190bc75e2e936f2cf4676124757f248c322813a6ac15",
+      "p2p_endpoint": "52.30.230.74:7100"
+    },
+    {
+      "address": "hx9bf92a94b259c929450a5f71e2c28f170038605d",
+      "private_key": "3d7d72c3642e1aa3510bcb576a299ca72e8c63894839047677da125ee3ab8672",
+      "p2p_endpoint": "3.10.120.252:7100"
+    },
+    {
+      "address": "hxc62b9f4ed995799004cc8a47e315353e6736c4a4",
+      "private_key": "5d62cbef04ed0baefdf13008d934fff610938e96f3361b2d8688c419e39a2ac8",
+      "p2p_endpoint": "18.140.149.201:7100"
+    },
+    {
+      "address": "hxa1927e5595c00bdf3491b429fb1f96fdf51023fb",
+      "private_key": "51f6dbb9554fd14a2a0acb27526721be8108474bd009599ab39f46eb81863195",
+      "p2p_endpoint": "3.132.106.168:7100"
+    },
+    {
+      "address": "hx92ebd91ed253e5acea21db45571f9309c9cdf2ae",
+      "private_key": "477b89ed46faaa3d891bd66ec47c3d8c34bd54087b5429b6f99da742260b8d1f",
+      "p2p_endpoint": "15.206.8.94:7100"
+    },
+    {
+      "address": "hxa56c3bd7ae94ab39b1fdc3b24c2df641e69c15a3",
+      "private_key": "6a248b239d48d4fac1e66d02555153d359acc2b09deeb6ba14fcad05a984d137",
+      "p2p_endpoint": "3.124.234.64:7100"
+    },
+    {
+      "address": "hx5c6ee8041af80ce329f818228a48db1bed1ee509",
+      "private_key": "cbca28c24d97c4a3adc95d4f60f727c3ca27d7353cab954c248fd4354cb69ca8",
+      "p2p_endpoint": "99.79.157.163:7100"
+    },
+    {
+      "address": "hx2fa2e3aa3f4cb836ebf0df635b2afaffe44d7182",
+      "private_key": "0f3bef621a31794ece7ab35f3091ee318e87a2ff41ce060ee50400f98ebdaea6",
+      "p2p_endpoint": "15.206.131.137:7100"
+    },
+    {
+      "address": "hxe8a53789c2c82d1a6a9d57cb9db4365582273821",
+      "private_key": "06fececacd6f1696132508401519b1a9b9f5a88de5578e5d520833d08d8208e6",
+      "p2p_endpoint": "3.232.35.23:7100"
+    },
+    {
+      "address": "hx53debdbd20ec5700f9685f8b13a750fa8d447020",
+      "private_key": "040feb072bc431b636718f64bb657329ecd9ce83b7dfa59c8ab16c1d3e041717",
+      "p2p_endpoint": "52.30.59.108:7100"
+    },
+    {
+      "address": "hxdb744dda15bac2f3db0e11e54cd9208dc0fa6db6",
+      "private_key": "8da4a31dd1bb6f58063866d928597b8302a09601d14e3858d012f113446638a3",
+      "p2p_endpoint": "3.124.77.186:7100"
+    },
+    {
+      "address": "hx4c9986e7d20576f33f5a141c82c945fb39960add",
+      "private_key": "2d2bd49d638d425cb620536e9634022479cf9af7ade5eb9c1e52b13412b86eac",
+      "p2p_endpoint": "3.232.179.99:7100"
+    },
+    {
+      "address": "hx4d49b3565a81c62e1e49bb76e8a8032ac7058216",
+      "private_key": "1e20ee1b7698e72d681682628469e723c706c37902c86ff67f6792b0a5ae8b67",
+      "p2p_endpoint": "18.140.169.195:7100"
+    },
+    {
+      "address": "hxabce80881906bd39713c7e76c03a571bc46fa44c",
+      "private_key": "41fc077832e108fe52b0925d64eb9beda8243f59ca971a17e726439a67a3c1cf",
+      "p2p_endpoint": "52.78.74.162:7100"
+    },
+    {
+      "address": "hx17f67efc9152563c5cf82f940284561e2779a723",
+      "private_key": "6aa9c99882ebe6260a8deefcc985f0777cf0d2bcd0bcc49708412386486a77b9",
+      "p2p_endpoint": "3.106.14.242:7100"
+    },
+    {
+      "address": "hx2c8e3cee28e86fb6a266e2e1da62fb852b654b5e",
+      "private_key": "8fb85cb02c63c9ef7d53ccd0c5e99a73bd32fd63566a8b81625475cbd12436dc",
+      "p2p_endpoint": "18.162.224.223:7100"
+    },
+    {
+      "address": "hxdb6242958400da7e1a822e6cd596bcd9bdb73247",
+      "private_key": "371d3e2ea5ee15b8a2f6fbd6bb67146de5c2e1c6503c2febf75d0f6b5a42d603",
+      "p2p_endpoint": "44.225.241.235:7100"
+    },
+    {
+      "address": "hx3e6e9f23d37f06da14d1c245bbe09e4c7a93a5ab",
+      "private_key": "e3071874f047d97f4e50c9b736df4cbe8191cd16aefae67760e896b450114bc7",
+      "p2p_endpoint": "52.8.209.236:7100"
+    },
+    {
+      "address": "hx6a6046c1fbf3c1b3829f634c5615d7de0ff6acca",
+      "private_key": "de5a79be1dcb254f04d875e80aacb628f6a86ffdc61bed3abd88e3f68bb1d9f7",
+      "p2p_endpoint": "3.132.118.177:7100"
+    },
+    {
+      "address": "hxcef5653d43badae5a8214eb1e7e08184d0f07a1a",
+      "private_key": "28905f21d5ea1d1412b10b7469c6ba60291c3408720052bd5437f7bfff235c66",
+      "p2p_endpoint": "3.106.106.208:7100"
+    },
+    {
+      "address": "hx625073da5280d2889efabfcfdf21265b7674dfb5",
+      "private_key": "20e2f8d8efdaaf612b0dc8d178d5300e745d1f6e43f53c22aca5e3d38b1f6328",
+      "p2p_endpoint": "3.114.213.28:7100"
+    },
+    {
+      "address": "hx81e2fa472efb9c037c9ac2943d2fe874d8cedeb0",
+      "private_key": "8b1a3f082fe02e5ff5c43b8a07ea75a4ccf39f41ee1f7d3d20acf2149205b3f0",
+      "p2p_endpoint": "52.78.151.16:7100"
+    },
+    {
+      "address": "hxbd79a2ff094f8438b934176189151862ed57c302",
+      "private_key": "777d1ed7372e22b6cbb1f499106a81b41088199363c9b39885901b39d34c740c",
+      "p2p_endpoint": "99.79.177.141:7100"
+    },
+    {
+      "address": "hx410356331f3be675be29ca3cd8f2607345f31fd1",
+      "private_key": "7565df13e8e3ee1d79cc8297ea18b520b90b2ab81895c274bc8703f45c037e8b",
+      "p2p_endpoint": "44.225.39.97:7100"
+    },
+    {
+      "address": "hx593856bc53edb349b27298dc4e38e5da89c9d6fd",
+      "private_key": "e56ff083de4937e8e8b193446fbe577092775cc892dac398881bcf4b2ec853c0",
+      "p2p_endpoint": "18.162.250.141:7100"
+    },
+    {
+      "address": "hx4b14dddf87bc4a4cb3e179628dededdfd4e07966",
+      "private_key": "ed1a2e4f7e83b42da88d3e03848e907086948339976a550cd2232aacff190d65",
+      "p2p_endpoint": "3.114.86.43:7100"
+    }
+  ],
+  "node_pem": "./resources/t_qa_infra.pem"
+}

@@ -17,13 +17,14 @@ const (
 
 func ParseGenesisOperationsV2(tx GenesisTransaction) ([]*types.Operation, error) {
 	var ops []*types.Operation
+	status := SuccessStatus
 	for _, account := range tx.Accounts {
 		accountOp := &types.Operation{
 			OperationIdentifier: &types.OperationIdentifier{
 				Index: int64(len(ops)),
 			},
 			Type:   GenesisOpType,
-			Status: SuccessStatus,
+			Status: &status,
 			Account: &types.AccountIdentifier{
 				Address: account.Addr(),
 			},
@@ -43,7 +44,7 @@ func ParseGenesisOperationsV2(tx GenesisTransaction) ([]*types.Operation, error)
 			Index: int64(len(ops)),
 		},
 		Type:   MessageOpType,
-		Status: SuccessStatus,
+		Status: &status,
 		Metadata: map[string]interface{}{
 			"message": tx.Message,
 		},
@@ -56,12 +57,13 @@ func ParseOperationsV2(transaction Transaction) ([]*types.Operation, error) {
 	var ops []*types.Operation
 
 	opType := TransferOpType
+	status := SuccessStatus
 	fromOp := &types.Operation{
 		OperationIdentifier: &types.OperationIdentifier{
 			Index: 0,
 		},
 		Type:   opType,
-		Status: SuccessStatus,
+		Status: &status,
 		Account: &types.AccountIdentifier{
 			Address: transaction.FromAddr(),
 		},
@@ -83,7 +85,7 @@ func ParseOperationsV2(transaction Transaction) ([]*types.Operation, error) {
 			},
 		},
 		Type:   opType,
-		Status: SuccessStatus,
+		Status: &status,
 		Account: &types.AccountIdentifier{
 			Address: transaction.ToAddr(),
 		},
@@ -105,7 +107,7 @@ func ParseOperationsV2(transaction Transaction) ([]*types.Operation, error) {
 			},
 		},
 		Type:   FeeOpType,
-		Status: SuccessStatus,
+		Status: &status,
 		Account: &types.AccountIdentifier{
 			Address: transaction.FromAddr(),
 		},
@@ -128,7 +130,7 @@ func ParseOperationsV2(transaction Transaction) ([]*types.Operation, error) {
 			},
 		},
 		Type:   FeeOpType,
-		Status: SuccessStatus,
+		Status: &status,
 		Account: &types.AccountIdentifier{
 			Address: TreasuryAddress,
 		},
@@ -153,12 +155,13 @@ func ParseOperationsV3(transaction Transaction) ([]*types.Operation, error) {
 	}
 	opType := TransferOpType
 
+	status := SuccessStatus
 	fromOp := &types.Operation{
 		OperationIdentifier: &types.OperationIdentifier{
 			Index: 0,
 		},
 		Type:   opType,
-		Status: SuccessStatus,
+		Status: &status,
 		Account: &types.AccountIdentifier{
 			Address: transaction.FromAddr(),
 		},
@@ -181,7 +184,7 @@ func ParseOperationsV3(transaction Transaction) ([]*types.Operation, error) {
 			},
 		},
 		Type:   opType,
-		Status: SuccessStatus,
+		Status: &status,
 		Account: &types.AccountIdentifier{
 			Address: transaction.ToAddr(),
 		},
@@ -204,7 +207,7 @@ func ParseOperationsV3(transaction Transaction) ([]*types.Operation, error) {
 			},
 		},
 		Type:   FeeOpType,
-		Status: SuccessStatus,
+		Status: &status,
 		Account: &types.AccountIdentifier{
 			Address: transaction.FromAddr(),
 		},
@@ -227,7 +230,7 @@ func ParseOperationsV3(transaction Transaction) ([]*types.Operation, error) {
 			},
 		},
 		Type:   FeeOpType,
-		Status: SuccessStatus,
+		Status: &status,
 		Account: &types.AccountIdentifier{
 			Address: TreasuryAddress,
 		},
@@ -242,18 +245,20 @@ func ParseOperationsV3(transaction Transaction) ([]*types.Operation, error) {
 }
 
 func MakeBaseOperations() (*types.Operation, error) {
+	status := SuccessStatus
 	baseOp := &types.Operation{
 		OperationIdentifier: &types.OperationIdentifier{
 			Index: 0,
 		},
 		Type:   BaseOpType,
-		Status: SuccessStatus,
+		Status: &status,
 	}
 	return baseOp, nil
 }
 
 func GetOperations(fa string, els []*EventLog, lastOpIndex int64) []*types.Operation {
 	ops := make([]*types.Operation, 0)
+	status := SuccessStatus
 	for _, el := range els {
 		switch *el.Indexed[0] {
 		case icxTransferSig:
@@ -264,7 +269,7 @@ func GetOperations(fa string, els []*EventLog, lastOpIndex int64) []*types.Opera
 					Index: lastOpIndex + 1,
 				},
 				Type:   ICXTransferOpType,
-				Status: SuccessStatus,
+				Status: &status,
 				Account: &types.AccountIdentifier{
 					Address: *el.Indexed[1],
 				},
@@ -284,7 +289,7 @@ func GetOperations(fa string, els []*EventLog, lastOpIndex int64) []*types.Opera
 					},
 				},
 				Type:   ICXTransferOpType,
-				Status: SuccessStatus,
+				Status: &status,
 				Account: &types.AccountIdentifier{
 					Address: *el.Indexed[2],
 				},
@@ -302,7 +307,7 @@ func GetOperations(fa string, els []*EventLog, lastOpIndex int64) []*types.Opera
 					Index: lastOpIndex + 1,
 				},
 				Type:   IssueOpType,
-				Status: SuccessStatus,
+				Status: &status,
 				Account: &types.AccountIdentifier{
 					Address: TreasuryAddress,
 				},
@@ -338,6 +343,7 @@ func GetOperations(fa string, els []*EventLog, lastOpIndex int64) []*types.Opera
 }
 
 func getClaimOps(fa string, el *EventLog, lastOpIndex int64) []*types.Operation {
+	status := SuccessStatus
 	value := new(big.Int)
 	value.SetString((*el.Data[1])[2:], 16)
 	ops := make([]*types.Operation, 0)
@@ -346,7 +352,7 @@ func getClaimOps(fa string, el *EventLog, lastOpIndex int64) []*types.Operation 
 			Index: lastOpIndex + 1,
 		},
 		Type:   ClaimOpType,
-		Status: SuccessStatus,
+		Status: &status,
 		Account: &types.AccountIdentifier{
 			Address: TreasuryAddress,
 		},
@@ -366,7 +372,7 @@ func getClaimOps(fa string, el *EventLog, lastOpIndex int64) []*types.Operation 
 			},
 		},
 		Type:   ClaimOpType,
-		Status: SuccessStatus,
+		Status: &status,
 		Account: &types.AccountIdentifier{
 			Address: fa,
 		},
@@ -379,6 +385,7 @@ func getClaimOps(fa string, el *EventLog, lastOpIndex int64) []*types.Operation 
 }
 
 func getBurnOps(el *EventLog, lastOpIndex int64) *types.Operation {
+	status := SuccessStatus
 	value := new(big.Int)
 	value.SetString((*el.Data[0])[2:], 16)
 	op := &types.Operation{
@@ -386,7 +393,7 @@ func getBurnOps(el *EventLog, lastOpIndex int64) *types.Operation {
 			Index: lastOpIndex + 1,
 		},
 		Type:   BurnOpType,
-		Status: SuccessStatus,
+		Status: &status,
 		Account: &types.AccountIdentifier{
 			Address: SystemScoreAddress,
 		},
